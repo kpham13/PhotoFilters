@@ -14,15 +14,15 @@ import OpenGLES // 11
 // 4 ImagePickerControllerDelegate, NavigationControllerDelegate | 8.5 GalleryDelegate | 10.1 CollectionViewDataSource, CollectionViewDelegate
 class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, GalleryDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
 
-    var defaultImage = UIImage(named: "default")
     var galleryVC = GalleryViewController() //? and weak var in GalleryViewController
     
     var context : CIContext? // 11.1a Core Image Context
     var originalThumbnail : UIImage? // 11.2a
     //var filterNames = [String]() // DELETE 11.4
     var filters = [Filter]() // 12.1 Core Data array
-    var filterThumbnails = [FilterThumbnail]() // Array of wrappers
+    var filterThumbnails = [FilterThumbnail]() // 11.4 Array of wrappers
     let imageQueue = NSOperationQueue()
+    var currentImage : UIImage?
     
     @IBOutlet weak var imageView: UIImageView! // 1 UIImageView and Outlet
     @IBOutlet weak var collectionView: UICollectionView! // 10 UICollectionView and Outlet
@@ -53,20 +53,24 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         */
         
         // 12.3 Call CoreDataSeeder function (data from appDelegate managedObjectContext)
-        var launchedOnce = NSUserDefaults.standardUserDefaults().boolForKey("HasLaunchedOnce")// primitives get copied, not referenced
-        println(launchedOnce)
-        NSUserDefaults.standardUserDefaults().setBool(true, forKey: "HasLaunchedOnce")
-        println(launchedOnce)
-        NSUserDefaults.standardUserDefaults().synchronize()
-        launchedOnce = NSUserDefaults.standardUserDefaults().boolForKey("HasLaunchedOnce")
-        println(launchedOnce)
-        
-        var appDelegate = UIApplication.sharedApplication().delegate as AppDelegate // Access AppDelegate
-        var seeder = CoreDataSeeder(context: appDelegate.managedObjectContext!)
-        // seeder.seedCoreData()
+        var launchedOnce = NSUserDefaults.standardUserDefaults().boolForKey("HasLaunchedOnce") // Primitives get copied, not referenced
+        if launchedOnce != true {
+            println("First time launching, seeding data")
+            var appDelegate = UIApplication.sharedApplication().delegate as AppDelegate // Access AppDelegate
+            var seeder = CoreDataSeeder(context: appDelegate.managedObjectContext!)
+            
+            NSUserDefaults.standardUserDefaults().setBool(true, forKey: "HasLaunchedOnce")
+            NSUserDefaults.standardUserDefaults().synchronize()
+            seeder.seedCoreData()
+        } else {
+            println("Has launched before, not seeding data")
+        }
         
         // 12.4a Fetch Filters
-        //self.fetchFilters()
+        self.fetchFilters()
+
+        // 12.6a Reset Filter Thumbnails
+        self.resetFilterThumbnails()
         
         // 10.2
         self.collectionView.dataSource = self
@@ -91,21 +95,48 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("FILTER_CELL", forIndexPath: indexPath) as FilterCollectionViewCell
         
         // CVH2
-        //cell.imageView.image = self.defaultImage
-        //cell.imageView.image = self.originalThumbnail
-        /*// DELETE 11.5
-        var filterThumbnail = FilterThumbnail(name: self.filterNames[indexPath.row], thumbnail: self.originalThumbnail!, queue: self.imageQueue, context: self.context!)
+        /* var filterThumbnail = FilterThumbnail(name: self.filterNames[indexPath.row], thumbnail: self.originalThumbnail!, queue: self.imageQueue, context: self.context!)
         filterThumbnail.generateThumbnail { (image) -> Void in
             // Generating filtered thumbnails from FilterThumbnail class, then setting FilteredCollectionViewCell to image result
             cell.imageView.image = image
+        } */
+        // 12.5
+        var filterThumbnail = self.filterThumbnails[indexPath.row]
+        // Lazy loading
+        if filterThumbnail.filteredThumbnail != nil {
+            cell.imageView.image = filterThumbnail.filteredThumbnail
+        } else {
+            // Set collection imageView to originalThumbnail, then generate filteredThumbnail. Set FilteredCollectionViewCell to image result.
+            cell.imageView.image = filterThumbnail.originalThumbnail
+            filterThumbnail.generateThumbnail({ (image) -> (Void) in
+                if let cell = collectionView.cellForItemAtIndexPath(indexPath) as? FilterCollectionViewCell {
+                    cell.imageView.image = image
+                }
+            })
         }
-        */
         
         // CVH3
         return cell
     }
     
+    // 12.7
     // MARK: - Collection View Delegate
+    
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        var filterThumbnail = self.filterThumbnails[indexPath.row]
+        var filteredImage = UIImage()
+        var image = CIImage(image: self.currentImage)
+        var imageFilter = CIFilter(name: filterThumbnail.filterName)
+        imageFilter.setDefaults()
+        imageFilter.setValue(image, forKey: kCIInputImageKey)
+        
+        var result = imageFilter.valueForKey(kCIOutputImageKey) as CIImage
+        var extent = result.extent()
+        var imageRef = self.context?.createCGImage(result, fromRect: extent)
+        filteredImage = UIImage(CGImage: imageRef)
+        self.imageView.image = filteredImage
+        self.exitFilterMode()
+    }
     
     // MARK: - Action Sheet
     
@@ -166,7 +197,11 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     
     func didTapOnPicture(image : UIImage) {
         println("didTapOnPicture")
+        self.currentImage = image
         self.imageView.image = image
+        self.generateThumbnail()
+        self.resetFilterThumbnails()
+        self.collectionView.reloadData()
     }
     
     // MARK: - Core Image Context
@@ -180,17 +215,6 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     
     // MARK: - Photo Filter
     
-    // 10.5
-    func enterFilterMode() {
-        self.imageViewHeightConstraint.constant = self.imageViewHeightConstraint.constant * 0.9
-        self.imageViewWidthConstraint.constant = self.imageViewWidthConstraint.constant * 0.9
-        self.collectionViewBottomConstraint.constant = 30
-        
-        UIView.animateWithDuration(0.4, animations: { () -> Void in
-            self.view.layoutIfNeeded()
-        })
-    }
-    
     // 11.2b Generate Thumbnail
     func generateThumbnail() {
         let size = CGSize(width: 100, height: 100)
@@ -200,39 +224,58 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         self.originalThumbnail = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
     }
-
-//    // 11.6
-//    func resetFilterThumbnails() {
-//        var newFilters = [FilterThumbnail]()
-//        for filterIndex in 0...(self.filters.count-1) { // Alternative: for var filterIndex = 0; filterIndex < self.filters.count; ++filterIndex
-//            var filter = self.filters[filterIndex]
-//            var thumbnail = FilterThumbnail(name: filterNames, thumbnail: self.originalThumbnail, queue: self.imageQueue, context: self.context)
-//            newFilters.append(thumbnail)
-//        }
-//        
-//        self.filterThumbnails = newFilters
-//    }
-
-//    func resetFilterThumbnails() {
-//        var newFilters = [FilterThumbnail]()
-//        for var index = 0; index < self.filters.count; ++index {
-//            var filter = self.filters[index]
-//            var thumbnail = FilterThumbnail(name: filterNames, thumbnail: self.originalThumbnail, queue: self.imageQueue, context: self.context!)
-//            newFilters.append(thumbnail)
-//        }
-//        self.filterThumbnails = newFilters
-//    }
     
-    //    func fetchFilters() -> [Filter] {
-    //        var fetchRequest = NSFetchRequest(entityName: "Filter")
-    //
-    //        var appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
-    //        var context = appDelegate.managedObjectContext
-    //
-    //        var error : NSError?
-    //        let fetchResult = context?.executeFetchRequest(fetchRequest, error: &error)
-    //        
-    //    }
+    // 12.4b Fetch filters
+    func fetchFilters() {
+        var appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
+        var context = appDelegate.managedObjectContext
+        
+        var error : NSError?
+        var fetchRequest = NSFetchRequest(entityName: "Filter")
+        let fetchResults = context?.executeFetchRequest(fetchRequest, error: &error)
+        if let filters = fetchResults as? [Filter] {
+            println("Filters: \(filters.count)")
+            self.filters = filters
+            println("Filters: \(self.filters.count)")
+        }
+    }
+
+    // 12.6b
+    func resetFilterThumbnails() {
+        var newFilters = [FilterThumbnail]()
+        for filterIndex in 0...(self.filters.count-1) { // Alternative: for var filterIndex = 0; filterIndex < self.filters.count; ++filterIndex
+            var filter = self.filters[filterIndex]
+            var filterName = filter.name
+            var thumbnail = FilterThumbnail(name: filterName, thumbnail: self.originalThumbnail!, queue: self.imageQueue, context: self.context!)
+            newFilters.append(thumbnail)
+        }
+        
+        self.filterThumbnails = newFilters
+    }
+    
+    // MARK: - Animation
+    
+    // 10.5
+    func enterFilterMode() {
+        self.imageViewHeightConstraint.constant = self.imageViewHeightConstraint.constant * 0.9
+        self.imageViewWidthConstraint.constant = self.imageViewWidthConstraint.constant * 0.9
+        self.collectionViewBottomConstraint.constant = 50
+        
+        UIView.animateWithDuration(0.4, animations: { () -> Void in
+            self.view.layoutIfNeeded()
+        })
+    }
+    
+    // 12.8
+    func exitFilterMode() {
+        self.imageViewHeightConstraint.constant = self.imageViewHeightConstraint.constant / 0.9
+        self.imageViewWidthConstraint.constant = self.imageViewWidthConstraint.constant / 0.9
+        self.collectionViewBottomConstraint.constant = -100
+        
+        UIView.animateWithDuration(0.4, animations: { () -> Void in
+            self.view.layoutIfNeeded()
+        })
+    }
     
     // 8.2
     // MARK: - Navigation
@@ -247,10 +290,13 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     // MARK: - On Load
     
     func imageLoad() {
+        var defaultImage = UIImage(named: "default")
+        
         self.imageView.layer.cornerRadius = self.imageView.frame.size.width / 6
         self.imageView.clipsToBounds = true
         self.imageView.layer.borderWidth = 3.0
         self.imageView.layer.borderColor = UIColor.whiteColor().CGColor
-        self.imageView.image = self.defaultImage
+        self.currentImage = defaultImage
+        self.imageView.image = defaultImage
     }
 }
