@@ -12,7 +12,7 @@ import UIKit
 class GalleryViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
     
     var images = [UIImage]() // 6 Initialize empty array of UIImages
-    var delegate : GalleryDelegate? // 8.1 Instantiate GalleryDelegate
+    weak var delegate : GalleryDelegate? // 8.1 Instantiate GalleryDelegate
     
     @IBOutlet weak var collectionView: UICollectionView! // 3.1 UICollectionView and Outlet
 
