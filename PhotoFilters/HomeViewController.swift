@@ -123,6 +123,25 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     // MARK: - Collection View Delegate
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        /*
+        var filterOperation = NSBlockOperation { () -> Void in
+            var filterThumbnail = self.filterThumbnails[indexPath.row]
+            var filteredImage = UIImage()
+            var image = CIImage(image: self.currentImage)
+            var imageFilter = CIFilter(name: filterThumbnail.filterName)
+            imageFilter.setDefaults()
+            imageFilter.setValue(image, forKey: kCIInputImageKey)
+            NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
+                var result = imageFilter.valueForKey(kCIOutputImageKey) as CIImage
+                var extent = result.extent()
+                var imageRef = self.context?.createCGImage(result, fromRect: extent)
+                filteredImage = UIImage(CGImage: imageRef)
+                self.imageView.image = filteredImage
+            })
+        }
+        
+        self.imageQueue.addOperation(filterOperation)
+        */
         var filterThumbnail = self.filterThumbnails[indexPath.row]
         var filteredImage = UIImage()
         var image = CIImage(image: self.currentImage)
@@ -171,6 +190,9 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
             // 3 Segue from HomeViewController to GalleryViewController
             self.performSegueWithIdentifier("SHOW_GALLERY", sender: self)
         }
+        let photosAction = UIAlertAction(title: "Photos Framework", style: UIAlertActionStyle.Default) { (action) -> Void in
+            self.performSegueWithIdentifier("SHOW_PHOTOS", sender: self)
+        }
         let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil)
         
         // Add actions to UIAlertController
@@ -178,6 +200,7 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         alertController.addAction(cameraAction)
         alertController.addAction(imagePickerAction)
         alertController.addAction(galleryAction)
+        alertController.addAction(photosAction)
         alertController.addAction(cancelAction)
         
         // Show alertController
@@ -188,7 +211,12 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     // MARK: - Image Picker Controller
     
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [NSObject : AnyObject]) {
-        self.imageView.image = info[UIImagePickerControllerEditedImage] as? UIImage
+        var image = info[UIImagePickerControllerEditedImage] as? UIImage
+        self.currentImage = image
+        self.imageView.image = image
+        self.generateThumbnail()
+        self.resetFilterThumbnails()
+        self.collectionView.reloadData()
         self.dismissViewControllerAnimated(true, completion: nil)
     }
     
@@ -196,7 +224,6 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     // MARK: - Gallery Delegate
     
     func didTapOnPicture(image : UIImage) {
-        println("didTapOnPicture")
         self.currentImage = image
         self.imageView.image = image
         self.generateThumbnail()
@@ -283,6 +310,9 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "SHOW_GALLERY" {
             let destinationVC = segue.destinationViewController as GalleryViewController
+            destinationVC.delegate = self
+        } else if segue.identifier == "SHOW_PHOTOS" {
+            let destinationVC = segue.destinationViewController as PhotosViewController
             destinationVC.delegate = self
         }
     }

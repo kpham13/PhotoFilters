@@ -40,6 +40,16 @@
 		0A7FFC1E19EDA0A800C865BD /* CoreDataSeeder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FFC1D19EDA0A800C865BD /* CoreDataSeeder.swift */; };
 		0A7FFC2419EDA1BC00C865BD /* Filter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FFC2319EDA1BC00C865BD /* Filter.swift */; };
 		0A84DA3F19EDB2890090AA4B /* FilterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A84DA3E19EDB2890090AA4B /* FilterCollectionViewCell.swift */; };
+		0AC94AE519EEF0E600CB6C54 /* Gotham-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0AC94ADD19EEED3C00CB6C54 /* Gotham-Black.ttf */; };
+		0AC94AE619EEF0E600CB6C54 /* Gotham-BlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0AC94ADE19EEED3C00CB6C54 /* Gotham-BlackItalic.ttf */; };
+		0AC94AE719EEF0E600CB6C54 /* Gotham-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0AC94ADF19EEED3C00CB6C54 /* Gotham-Bold.ttf */; };
+		0AC94AE819EEF0E600CB6C54 /* Gotham-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0AC94AE019EEED3C00CB6C54 /* Gotham-BoldItalic.ttf */; };
+		0AC94AE919EEF0E600CB6C54 /* Gotham-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0AC94AE119EEED3C00CB6C54 /* Gotham-Light.ttf */; };
+		0AC94AEA19EEF0E600CB6C54 /* Gotham-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0AC94AE219EEED3C00CB6C54 /* Gotham-LightItalic.ttf */; };
+		0AC94AEB19EEF0E600CB6C54 /* Gotham-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0AC94AE319EEED3C00CB6C54 /* Gotham-Thin.ttf */; };
+		0AC94AEC19EEF0E600CB6C54 /* Gotham-ThinItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0AC94AE419EEED3C00CB6C54 /* Gotham-ThinItalic.ttf */; };
+		0AC94AEF19EF0A2C00CB6C54 /* PhotosCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC94AEE19EF0A2C00CB6C54 /* PhotosCollectionViewCell.swift */; };
+		0AC94AF119EF0A6B00CB6C54 /* PhotosViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC94AF019EF0A6B00CB6C54 /* PhotosViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -90,6 +100,16 @@
 		0A7FFC1D19EDA0A800C865BD /* CoreDataSeeder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataSeeder.swift; sourceTree = "<group>"; };
 		0A7FFC2319EDA1BC00C865BD /* Filter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Filter.swift; sourceTree = "<group>"; };
 		0A84DA3E19EDB2890090AA4B /* FilterCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilterCollectionViewCell.swift; sourceTree = "<group>"; };
+		0AC94ADD19EEED3C00CB6C54 /* Gotham-Black.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Gotham-Black.ttf"; sourceTree = "<group>"; };
+		0AC94ADE19EEED3C00CB6C54 /* Gotham-BlackItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Gotham-BlackItalic.ttf"; sourceTree = "<group>"; };
+		0AC94ADF19EEED3C00CB6C54 /* Gotham-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Gotham-Bold.ttf"; sourceTree = "<group>"; };
+		0AC94AE019EEED3C00CB6C54 /* Gotham-BoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Gotham-BoldItalic.ttf"; sourceTree = "<group>"; };
+		0AC94AE119EEED3C00CB6C54 /* Gotham-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Gotham-Light.ttf"; sourceTree = "<group>"; };
+		0AC94AE219EEED3C00CB6C54 /* Gotham-LightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Gotham-LightItalic.ttf"; sourceTree = "<group>"; };
+		0AC94AE319EEED3C00CB6C54 /* Gotham-Thin.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Gotham-Thin.ttf"; sourceTree = "<group>"; };
+		0AC94AE419EEED3C00CB6C54 /* Gotham-ThinItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Gotham-ThinItalic.ttf"; sourceTree = "<group>"; };
+		0AC94AEE19EF0A2C00CB6C54 /* PhotosCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotosCollectionViewCell.swift; sourceTree = "<group>"; };
+		0AC94AF019EF0A6B00CB6C54 /* PhotosViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotosViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -144,6 +164,14 @@
 		0A2D1F9E19EC3479004A688A /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				0AC94ADD19EEED3C00CB6C54 /* Gotham-Black.ttf */,
+				0AC94ADE19EEED3C00CB6C54 /* Gotham-BlackItalic.ttf */,
+				0AC94ADF19EEED3C00CB6C54 /* Gotham-Bold.ttf */,
+				0AC94AE019EEED3C00CB6C54 /* Gotham-BoldItalic.ttf */,
+				0AC94AE119EEED3C00CB6C54 /* Gotham-Light.ttf */,
+				0AC94AE219EEED3C00CB6C54 /* Gotham-LightItalic.ttf */,
+				0AC94AE319EEED3C00CB6C54 /* Gotham-Thin.ttf */,
+				0AC94AE419EEED3C00CB6C54 /* Gotham-ThinItalic.ttf */,
 				0A2D1FCE19EC7047004A688A /* unsplash_1.jpg */,
 				0A2D1FCF19EC7047004A688A /* unsplash_2.jpg */,
 				0A2D1FD019EC7047004A688A /* unsplash_3.jpg */,
@@ -190,6 +218,7 @@
 				0A2D1FF019EC86C7004A688A /* GalleryDelegate.swift */,
 				0A2D1FC619EC3CA6004A688A /* GalleryViewController.swift */,
 				0A2D1FCA19EC646E004A688A /* HomeViewController.swift */,
+				0AC94AF019EF0A6B00CB6C54 /* PhotosViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -213,6 +242,7 @@
 				0A2D1FC819EC423F004A688A /* GalleryCollectionViewCell.swift */,
 				0A2D1FAC19EC3479004A688A /* LaunchScreen.xib */,
 				0A2D1FA719EC3479004A688A /* Main.storyboard */,
+				0AC94AEE19EF0A2C00CB6C54 /* PhotosCollectionViewCell.swift */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -297,6 +327,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0AC94AE519EEF0E600CB6C54 /* Gotham-Black.ttf in Resources */,
+				0AC94AE619EEF0E600CB6C54 /* Gotham-BlackItalic.ttf in Resources */,
+				0AC94AE719EEF0E600CB6C54 /* Gotham-Bold.ttf in Resources */,
+				0AC94AE819EEF0E600CB6C54 /* Gotham-BoldItalic.ttf in Resources */,
+				0AC94AE919EEF0E600CB6C54 /* Gotham-Light.ttf in Resources */,
+				0AC94AEA19EEF0E600CB6C54 /* Gotham-LightItalic.ttf in Resources */,
+				0AC94AEB19EEF0E600CB6C54 /* Gotham-Thin.ttf in Resources */,
+				0AC94AEC19EEF0E600CB6C54 /* Gotham-ThinItalic.ttf in Resources */,
 				0A2D1FE219EC7047004A688A /* unsplash_4.jpg in Resources */,
 				0A2D1FA919EC3479004A688A /* Main.storyboard in Resources */,
 				0A2D1FE519EC7047004A688A /* unsplash_7.jpg in Resources */,
@@ -336,10 +374,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A2D1FC919EC423F004A688A /* GalleryCollectionViewCell.swift in Sources */,
+				0AC94AF119EF0A6B00CB6C54 /* PhotosViewController.swift in Sources */,
 				0A7FFC2419EDA1BC00C865BD /* Filter.swift in Sources */,
 				0A2D1FC719EC3CA6004A688A /* GalleryViewController.swift in Sources */,
 				0A7FFC1819ED917D00C865BD /* FilterThumbnail.swift in Sources */,
 				0A84DA3F19EDB2890090AA4B /* FilterCollectionViewCell.swift in Sources */,
+				0AC94AEF19EF0A2C00CB6C54 /* PhotosCollectionViewCell.swift in Sources */,
 				0A2D1FA419EC3479004A688A /* PhotoFilters.xcdatamodeld in Sources */,
 				0A2D1FA119EC3479004A688A /* AppDelegate.swift in Sources */,
 				0A2D1FCB19EC646F004A688A /* HomeViewController.swift in Sources */,
