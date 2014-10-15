@@ -9,3 +9,4 @@ Week 2 - PhotoFilters App
 - Core Image (conversion/thumbnails/filters)
 - Custom Protocols/Delegates
 - Image Picker Controller (Camera/Saved Photos Album)
+- Photos Framework
