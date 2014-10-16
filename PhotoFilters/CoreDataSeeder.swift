@@ -11,6 +11,7 @@ import CoreData
 
 // 12.2 Core Data Seeder
 class CoreDataSeeder {
+    
     var managedObjectContext : NSManagedObjectContext!
     
     init(context : NSManagedObjectContext) {

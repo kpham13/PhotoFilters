@@ -8,8 +8,7 @@
 
 import UIKit
 
-class GalleryCollectionHeaderView: UICollectionReusableView {
+class CollectionHeaderView: UICollectionReusableView {
     
-    @IBOutlet weak var headerLabel: UILabel!
-    @IBOutlet weak var footerLabel: UILabel!
+    @IBOutlet weak var galleryHeaderLabel: UILabel!
 }

@@ -34,7 +34,8 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.imageLoad()
+        
+        self.setupVC()
         self.coreImageContext()
         self.generateThumbnail() // 11.5
         
@@ -169,6 +170,9 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
             // 10.6 Filter Action, calling animation function
             self.enterFilterMode()
         }
+        let avfAction = UIAlertAction(title: "AVF Camera", style: UIAlertActionStyle.Default) { (action) -> Void in
+            self.performSegueWithIdentifier("SHOW_AVF", sender: self)
+        }
         let cameraAction = UIAlertAction(title: "Take Photo", style: UIAlertActionStyle.Default) { (action) -> Void in
             let imagePicker = UIImagePickerController()
             imagePicker.delegate = self
@@ -190,6 +194,7 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
             // 3 Segue from HomeViewController to GalleryViewController
             self.performSegueWithIdentifier("SHOW_GALLERY", sender: self)
         }
+        
         let photosAction = UIAlertAction(title: "Photos Framework", style: UIAlertActionStyle.Default) { (action) -> Void in
             self.performSegueWithIdentifier("SHOW_PHOTOS", sender: self)
         }
@@ -197,6 +202,7 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         
         // Add actions to UIAlertController
         alertController.addAction(filterAction)
+        alertController.addAction(avfAction)
         alertController.addAction(cameraAction)
         alertController.addAction(imagePickerAction)
         alertController.addAction(galleryAction)
@@ -261,9 +267,7 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         var fetchRequest = NSFetchRequest(entityName: "Filter")
         let fetchResults = context?.executeFetchRequest(fetchRequest, error: &error)
         if let filters = fetchResults as? [Filter] {
-            println("Filters: \(filters.count)")
             self.filters = filters
-            println("Filters: \(self.filters.count)")
         }
     }
 
@@ -317,9 +321,9 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         }
     }
     
-    // MARK: - On Load
+    // MARK: - viewDidLoad
     
-    func imageLoad() {
+    func setupVC() {
         var defaultImage = UIImage(named: "default")
         
         self.imageView.layer.cornerRadius = self.imageView.frame.size.width / 6
@@ -329,4 +333,5 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         self.currentImage = defaultImage
         self.imageView.image = defaultImage
     }
+    
 }
