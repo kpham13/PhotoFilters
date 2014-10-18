@@ -89,7 +89,7 @@ class GalleryViewController: UIViewController, UICollectionViewDataSource, UICol
     
     // MARK: - Gesture Recognizer
     
-    func pinchAction(pinch : UIPinchGestureRecognizer) {
+    func pinchAction(pinch: UIPinchGestureRecognizer) {
         if pinch.state == UIGestureRecognizerState.Ended {
             self.collectionView.performBatchUpdates({ () -> Void in
                 if pinch.velocity > 0 {

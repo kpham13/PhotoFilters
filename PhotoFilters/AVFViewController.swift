@@ -12,10 +12,14 @@ import CoreMedia
 import CoreVideo
 import ImageIO
 import QuartzCore
+import Photos
 
 class AVFViewController: UIViewController {
 
     var stillImageOutput = AVCaptureStillImageOutput()
+    var album : PHAssetCollection!
+    
+    var delegate : GalleryDelegate?
     
     @IBOutlet weak var capturePreviewImageView: UIImageView!
     @IBOutlet weak var navigationTitle: UINavigationItem!
@@ -45,6 +49,10 @@ class AVFViewController: UIViewController {
         self.stillImageOutput.outputSettings = outputSettings
         captureSession.addOutput(self.stillImageOutput)
         captureSession.startRunning()
+        
+        // Gesture Recognizer
+        var tapImage = UITapGestureRecognizer(target: self, action: "saveAssetToPhotos:")
+        self.capturePreviewImageView.addGestureRecognizer(tapImage)
     }
 
     override func didReceiveMemoryWarning() {
@@ -78,6 +86,19 @@ class AVFViewController: UIViewController {
         })
     }
     
+    // MARK: - Photos Framework Save
+    
+    func saveAssetToPhotos(asset: PHAsset) {
+        PHPhotoLibrary.sharedPhotoLibrary().performChanges({ () -> Void in
+            let createAssetRequest = PHAssetChangeRequest.creationRequestForAssetFromImage(self.capturePreviewImageView.image)
+            let assetPlaceholder = createAssetRequest.placeholderForCreatedAsset
+            let albumChangeRequest = PHAssetCollectionChangeRequest(forAssetCollection: self.album)
+            albumChangeRequest.addAssets([assetPlaceholder])
+        }, completionHandler: nil)
+        
+        self.delegate?.didTapOnPicture(self.capturePreviewImageView.image!)
+        self.dismissVC()
+    }
     
     // MARK: - Navigation Actions
     

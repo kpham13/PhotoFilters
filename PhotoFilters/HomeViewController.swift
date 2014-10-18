@@ -10,6 +10,7 @@ import UIKit
 import CoreData // 11
 import CoreImage // 11
 import OpenGLES // 11
+import Social //
 
 // 4 ImagePickerControllerDelegate, NavigationControllerDelegate | 8.5 GalleryDelegate | 10.1 CollectionViewDataSource, CollectionViewDelegate
 class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, GalleryDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
@@ -23,7 +24,7 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     var filterThumbnails = [FilterThumbnail]() // 11.4 Array of wrappers
     let imageQueue = NSOperationQueue()
     var currentImage : UIImage?
-    
+
     @IBOutlet weak var imageView: UIImageView! // 1 UIImageView and Outlet
     @IBOutlet weak var collectionView: UICollectionView! // 10 UICollectionView and Outlet
     
@@ -284,6 +285,18 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         self.filterThumbnails = newFilters
     }
     
+    // MARK: - Social
+    
+    func postToTwitter(sender: AnyObject) {
+        if SLComposeViewController.isAvailableForServiceType(SLServiceTypeTwitter) {
+            var tweetSheet : SLComposeViewController = SLComposeViewController(forServiceType: SLServiceTypeTwitter)
+            tweetSheet.setInitialText("Post to Twitter")
+            tweetSheet.addImage(self.currentImage)
+            
+            self.presentViewController(tweetSheet, animated: true, completion: nil)
+        }
+    }
+    
     // MARK: - Animation
     
     // 10.5
@@ -318,6 +331,9 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         } else if segue.identifier == "SHOW_PHOTOS" {
             let destinationVC = segue.destinationViewController as PhotosViewController
             destinationVC.delegate = self
+        } else if segue.identifier == "SHOW_AVF" {
+            let destinationVC = segue.destinationViewController as AVFViewController
+            destinationVC.delegate = self
         }
     }
     
@@ -325,6 +341,9 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     
     func setupVC() {
         var defaultImage = UIImage(named: "default")
+        
+        var postButton = UIBarButtonItem(title: "Post", style: UIBarButtonItemStyle.Bordered, target: self, action: "postToTwitter:")
+        self.navigationItem.rightBarButtonItem = postButton
         
         self.imageView.layer.cornerRadius = self.imageView.frame.size.width / 6
         self.imageView.clipsToBounds = true

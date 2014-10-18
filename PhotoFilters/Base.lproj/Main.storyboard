@@ -303,10 +303,10 @@
             </objects>
             <point key="canvasLocation" x="1707" y="136"/>
         </scene>
-        <!--View Controller-->
+        <!--AVF View Controller-->
         <scene sceneID="PBQ-rb-EO3">
             <objects>
-                <viewController id="jMj-1u-F1e" customClass="AVFViewController" customModule="PhotoFilters" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SHOW_AVF" title="AVF View Controller" id="jMj-1u-F1e" customClass="AVFViewController" customModule="PhotoFilters" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Q3w-R6-8hJ"/>
                         <viewControllerLayoutGuide type="bottom" id="NeZ-6Z-Lyt"/>
@@ -336,7 +336,7 @@
                                     </navigationItem>
                                 </items>
                             </navigationBar>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="J2M-Xy-oNr">
+                            <imageView clipsSubviews="YES" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="J2M-Xy-oNr">
                                 <rect key="frame" x="255" y="448" width="90" height="90"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="90" id="SrW-cq-n9b"/>
