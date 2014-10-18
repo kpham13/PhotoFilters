@@ -8,28 +8,21 @@
 
 import UIKit
 
-// 3.2 UICollectionViewDataSource | 8.3 UICollectionViewDelegate
 class GalleryViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
     
-    var images = [UIImage]() // 6 Initialize empty array of UIImages
+    var images = [UIImage]()
+    var thumbnails = [UIImage]()
     var flowLayout : UICollectionViewFlowLayout!
+    weak var delegate : GalleryDelegate?
     
-    weak var delegate : GalleryDelegate? // 8.1 Instantiate GalleryDelegate
-    
-    @IBOutlet weak var collectionView: UICollectionView! // 3.1 UICollectionView and Outlet
+    @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var navigationTitle: UINavigationItem!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setupVC()
-        
+        self.setupPinchGesture()
         self.flowLayout = self.collectionView.collectionViewLayout as UICollectionViewFlowLayout
-        
-        // Gesture Recognizer
-        var galleryPinch = UIPinchGestureRecognizer(target: self, action: "pinchAction:")
-        self.collectionView.addGestureRecognizer(galleryPinch)
-        
-        // 3.3 UICollectionView Data Source and Delegate (Similar to UITableView work flow)
         self.collectionView.dataSource = self
         self.collectionView.delegate = self
     }
@@ -38,11 +31,10 @@ class GalleryViewController: UIViewController, UICollectionViewDataSource, UICol
         super.didReceiveMemoryWarning()
     }
     
-    // 3.4
     // MARK: - Collection View Data Source
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.images.count
+        return self.thumbnails.count
     }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
@@ -51,7 +43,7 @@ class GalleryViewController: UIViewController, UICollectionViewDataSource, UICol
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("GALLERY_CELL", forIndexPath: indexPath) as GalleryCollectionViewCell
         
         // CV2 Configure cell
-        cell.galleryImageView.image = self.images[indexPath.row]
+        cell.galleryImageView.image = self.thumbnails[indexPath.row]
         
         // CV3 Return cell
         return cell
@@ -71,7 +63,7 @@ class GalleryViewController: UIViewController, UICollectionViewDataSource, UICol
             let footerView = collectionView.dequeueReusableSupplementaryViewOfKind(UICollectionElementKindSectionFooter, withReuseIdentifier: "FOOTER_VIEW", forIndexPath: indexPath) as CollectionFooterView
             
             var label = footerView.galleryFooterLabel
-            label.text = "\(self.images.count) Photos"
+            label.text = "\(self.thumbnails.count) Photos"
             
             reusableView = footerView
         }
@@ -79,7 +71,6 @@ class GalleryViewController: UIViewController, UICollectionViewDataSource, UICol
         return reusableView
     }
     
-    // 8.4
     // MARK: - Collection View Delegate
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
@@ -89,11 +80,16 @@ class GalleryViewController: UIViewController, UICollectionViewDataSource, UICol
     
     // MARK: - Gesture Recognizer
     
+    func setupPinchGesture() {
+        var galleryPinch = UIPinchGestureRecognizer(target: self, action: "pinchAction:")
+        self.collectionView.addGestureRecognizer(galleryPinch)
+    }
+    
     func pinchAction(pinch: UIPinchGestureRecognizer) {
         if pinch.state == UIGestureRecognizerState.Ended {
             self.collectionView.performBatchUpdates({ () -> Void in
                 if pinch.velocity > 0 {
-                    if self.flowLayout.itemSize.width < 360 {
+                    if self.flowLayout.itemSize.width < 312 { // iPhone 6: 360
                         self.flowLayout.itemSize = CGSize(width: self.flowLayout.itemSize.width * 2, height: self.flowLayout.itemSize.height * 2)
                         println(self.flowLayout.itemSize)
                     }
@@ -107,13 +103,9 @@ class GalleryViewController: UIViewController, UICollectionViewDataSource, UICol
         }
     }
     
-    // MARK: - Navigation Actions
+    // MARK: - Navigation
     
     @IBAction func cancelButton(sender: AnyObject) {
-        self.dismissVC()
-    }
-    
-    func dismissVC() {
         self.dismissViewControllerAnimated(true, completion: nil)
     }
     
@@ -122,11 +114,21 @@ class GalleryViewController: UIViewController, UICollectionViewDataSource, UICol
     func setupVC() {
         self.navigationTitle.title = "Gallery"
         
-        // 7 Append to images array
+        // Append to images and thumbnails array
         for imageIndex in 1...17 {
+            let size = CGSize(width: 100, height: 100)
+            var thumbnail = UIImage(named: "unsplash_\(imageIndex).jpg")
             var image = UIImage(named: "unsplash_\(imageIndex).jpg")
+            
+            UIGraphicsBeginImageContext(size)
+            thumbnail.drawInRect(CGRect(x: 0, y: 0, width: 100, height: 100))
+            thumbnail = UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+            
+            self.thumbnails.append(thumbnail)
             self.images.append(image)
         }
+        
     }
     
 }

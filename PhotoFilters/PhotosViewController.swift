@@ -15,7 +15,7 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
     var assetFetchResult : PHFetchResult!
     var assetCellSize : CGSize!
     var originalSize : CGSize! //
-    
+    var flowLayout : UICollectionViewFlowLayout!
     var delegate : GalleryDelegate?
     
     @IBOutlet weak var collectionView: UICollectionView!
@@ -24,18 +24,9 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setupVC()
-        
-        // Getting the image manager
-        self.imageManager = PHCachingImageManager()
-        // Fetch all results
-        self.assetFetchResult = PHAsset.fetchAssetsWithOptions(nil)
-        // Determine device scale + adjust asset cell size
-        var scale = UIScreen.mainScreen().scale
-        var flowLayout = self.collectionView.collectionViewLayout as UICollectionViewFlowLayout
-        var cellSize = flowLayout.itemSize
-        self.assetCellSize = CGSizeMake(cellSize.width * scale, cellSize.height * scale)
-        self.originalSize = CGSize(width: 300, height: 300)
-        
+        self.setupPhotos()
+        self.setupPinchGesture()
+        self.flowLayout = self.collectionView.collectionViewLayout as UICollectionViewFlowLayout
         self.collectionView.dataSource = self
         self.collectionView.delegate = self
     }
@@ -86,13 +77,49 @@ class PhotosViewController: UIViewController, UICollectionViewDataSource, UIColl
         }
     }
     
-    // MARK: - Navigation Actions
+    // MARK: - Photos Framework
     
-    @IBAction func cancelButton(sender: AnyObject) {
-        self.dismissVC()
+    func setupPhotos() {
+        // Getting the image manager
+        self.imageManager = PHCachingImageManager()
+        // Fetch all results
+        self.assetFetchResult = PHAsset.fetchAssetsWithOptions(nil)
+        // Determine device scale + adjust asset cell size
+        var scale = UIScreen.mainScreen().scale
+        var flowLayout = self.collectionView.collectionViewLayout as UICollectionViewFlowLayout
+        var cellSize = flowLayout.itemSize
+        self.assetCellSize = CGSizeMake(cellSize.width * scale, cellSize.height * scale)
+        self.originalSize = CGSize(width: 300, height: 300)
     }
     
-    func dismissVC() {
+    // MARK: - Gesture Recognizer
+    
+    func setupPinchGesture() {
+        var photosPinch = UIPinchGestureRecognizer(target: self, action: "pinchAction:")
+        self.collectionView.addGestureRecognizer(photosPinch)
+    }
+    
+    func pinchAction(pinch: UIPinchGestureRecognizer) {
+        if pinch.state == UIGestureRecognizerState.Ended {
+            self.collectionView.performBatchUpdates({ () -> Void in
+                if pinch.velocity > 0 {
+                    if self.flowLayout.itemSize.width < 312 { // iPhone 6: 360
+                        self.flowLayout.itemSize = CGSize(width: self.flowLayout.itemSize.width * 2, height: self.flowLayout.itemSize.height * 2)
+                        println(self.flowLayout.itemSize)
+                    }
+                } else {
+                    if self.flowLayout.itemSize.width > 22.5 {
+                        self.flowLayout.itemSize = CGSize(width: self.flowLayout.itemSize.width * 0.5, height: self.flowLayout.itemSize.height * 0.5)
+                        println(self.flowLayout.itemSize)
+                    }
+                }
+                }, completion: nil)
+        }
+    }
+    
+    // MARK: - Navigation
+    
+    @IBAction func cancelButton(sender: AnyObject) {
         self.dismissViewControllerAnimated(true, completion: nil)
     }
     

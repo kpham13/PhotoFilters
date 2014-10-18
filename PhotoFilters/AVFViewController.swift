@@ -18,45 +18,53 @@ class AVFViewController: UIViewController {
 
     var stillImageOutput = AVCaptureStillImageOutput()
     var album : PHAssetCollection!
-    
     var delegate : GalleryDelegate?
     
+    @IBOutlet weak var previewView: UIView!
     @IBOutlet weak var capturePreviewImageView: UIImageView!
     @IBOutlet weak var navigationTitle: UINavigationItem!
+    @IBOutlet weak var saveButton: UIBarButtonItem!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         self.setupVC()
-
-        var captureSession = AVCaptureSession()
-        var previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        captureSession.sessionPreset = AVCaptureSessionPresetPhoto
-        previewLayer.frame = CGRectMake(0, 65, self.view.frame.size.width, CGFloat(self.view.frame.size.height * 0.6))
-        self.view.layer.addSublayer(previewLayer)
-        
-        var device = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
-        
-        var error : NSError?
-        var input = AVCaptureDeviceInput.deviceInputWithDevice(device, error: &error) as AVCaptureDeviceInput!
-        
-        if input == nil {
-            println("no bueno")
-        }
-        
-        captureSession.addInput(input)
-        var outputSettings = [AVVideoCodecKey : AVVideoCodecJPEG]
-        self.stillImageOutput.outputSettings = outputSettings
-        captureSession.addOutput(self.stillImageOutput)
-        captureSession.startRunning()
-        
-        // Gesture Recognizer
-        var tapImage = UITapGestureRecognizer(target: self, action: "saveAssetToPhotos:")
-        self.capturePreviewImageView.addGestureRecognizer(tapImage)
+        self.setupAVFoundation()
+        self.setupTapGesture()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+    }
+    
+    // MARK: - AVFoundation
+    
+    func setupAVFoundation() {
+        var captureSession = AVCaptureSession()
+        var previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
+        var bounds = self.previewView.layer.bounds
+        
+        captureSession.sessionPreset = AVCaptureSessionPresetPhoto
+        // previewLayer.frame = CGRectMake(0, 65, self.view.frame.size.width, CGFloat(self.view.frame.size.height * 0.6))
+        previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
+        previewLayer.bounds = bounds
+        previewLayer.position = CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds))
+        // self.view.layer.addSublayer(previewLayer)
+        self.previewView.layer.addSublayer(previewLayer)
+        
+        var device = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
+        var error : NSError?
+        var input = AVCaptureDeviceInput.deviceInputWithDevice(device, error: &error) as AVCaptureDeviceInput!
+        
+        if input == nil {
+            println("No Bueno!")
+        }
+        captureSession.addInput(input)
+        
+        var outputSettings = [AVVideoCodecKey : AVVideoCodecJPEG]
+        
+        self.stillImageOutput.outputSettings = outputSettings
+        captureSession.addOutput(self.stillImageOutput)
+        captureSession.startRunning()
     }
 
     @IBAction func capturePressed(sender: AnyObject) {
@@ -84,11 +92,17 @@ class AVFViewController: UIViewController {
             var image = UIImage(data: data)
             self.capturePreviewImageView.image = image
         })
+        
+        self.saveButton.enabled = true
     }
     
     // MARK: - Photos Framework Save
     
-    func saveAssetToPhotos(asset: PHAsset) {
+    @IBAction func saveButton(sender: AnyObject) {
+        self.saveAssetToPhotos()
+    }
+    
+    func saveAssetToPhotos() {
         PHPhotoLibrary.sharedPhotoLibrary().performChanges({ () -> Void in
             let createAssetRequest = PHAssetChangeRequest.creationRequestForAssetFromImage(self.capturePreviewImageView.image)
             let assetPlaceholder = createAssetRequest.placeholderForCreatedAsset
@@ -97,23 +111,33 @@ class AVFViewController: UIViewController {
         }, completionHandler: nil)
         
         self.delegate?.didTapOnPicture(self.capturePreviewImageView.image!)
-        self.dismissVC()
+        self.dismissViewControllerAnimated(true, completion: nil)
     }
     
-    // MARK: - Navigation Actions
+    // MARK: - Gesture Recognizer
+    
+    func setupTapGesture() {
+        var tapImage = UITapGestureRecognizer(target: self, action: "saveAssetToPhotos")
+        self.capturePreviewImageView.addGestureRecognizer(tapImage)
+    }
+    
+    // MARK: - Navigation
     
     @IBAction func cancelButton(sender: AnyObject) {
-        self.dismissVC()
-    }
-    
-    func dismissVC() {
         self.dismissViewControllerAnimated(true, completion: nil)
     }
     
     // MARK: - viewDidLoad
     
     func setupVC() {
+        // let cancelButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Cancel, target: self, action: "dismissVC")
+        // let saveButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Save, target: self, action: "saveAssetToPhotos:")
         self.navigationTitle.title = "AVFoundation Camera"
+        self.saveButton.enabled = false
+        //self.navigationBar.backItem?.leftBarButtonItem = cancelButton
+        //self.navigationItem.leftBarButtonItem = cancelButton
+        // self.instructionsLabel.text = "Tap image to save"
+        // self.instructionsLabel.hidden = true
     }
     
 }

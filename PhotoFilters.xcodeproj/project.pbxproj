@@ -36,6 +36,7 @@
 		0A2D1FEF19EC7047004A688A /* unsplash_17.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0A2D1FDE19EC7047004A688A /* unsplash_17.jpg */; };
 		0A2D1FF119EC86C7004A688A /* GalleryDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2D1FF019EC86C7004A688A /* GalleryDelegate.swift */; };
 		0A2D1FF319EC8C21004A688A /* CollectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2D1FF219EC8C21004A688A /* CollectionHeaderView.swift */; };
+		0A6BB05719F2678600E45921 /* PictureViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6BB05619F2678600E45921 /* PictureViewController.swift */; };
 		0A7FFC1819ED917D00C865BD /* FilterThumbnail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FFC1719ED917D00C865BD /* FilterThumbnail.swift */; };
 		0A7FFC1E19EDA0A800C865BD /* CoreDataSeeder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FFC1D19EDA0A800C865BD /* CoreDataSeeder.swift */; };
 		0A7FFC2419EDA1BC00C865BD /* Filter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7FFC2319EDA1BC00C865BD /* Filter.swift */; };
@@ -91,6 +92,7 @@
 		0A2D1FDE19EC7047004A688A /* unsplash_17.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = unsplash_17.jpg; sourceTree = "<group>"; };
 		0A2D1FF019EC86C7004A688A /* GalleryDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GalleryDelegate.swift; sourceTree = "<group>"; };
 		0A2D1FF219EC8C21004A688A /* CollectionHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionHeaderView.swift; sourceTree = "<group>"; };
+		0A6BB05619F2678600E45921 /* PictureViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PictureViewController.swift; sourceTree = "<group>"; };
 		0A7FFC1719ED917D00C865BD /* FilterThumbnail.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilterThumbnail.swift; sourceTree = "<group>"; };
 		0A7FFC1D19EDA0A800C865BD /* CoreDataSeeder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataSeeder.swift; sourceTree = "<group>"; };
 		0A7FFC2319EDA1BC00C865BD /* Filter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Filter.swift; sourceTree = "<group>"; };
@@ -202,6 +204,7 @@
 				0A2D1FF019EC86C7004A688A /* GalleryDelegate.swift */,
 				0A2D1FC619EC3CA6004A688A /* GalleryViewController.swift */,
 				0A2D1FCA19EC646E004A688A /* HomeViewController.swift */,
+				0A6BB05619F2678600E45921 /* PictureViewController.swift */,
 				0AC94AF019EF0A6B00CB6C54 /* PhotosViewController.swift */,
 			);
 			name = Controller;
@@ -353,6 +356,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0AC94AF719EF2B6600CB6C54 /* CollectionFooterView.swift in Sources */,
+				0A6BB05719F2678600E45921 /* PictureViewController.swift in Sources */,
 				0A2D1FC919EC423F004A688A /* GalleryCollectionViewCell.swift in Sources */,
 				0AC94AF919F06E3C00CB6C54 /* AVFViewController.swift in Sources */,
 				0AC94AF119EF0A6B00CB6C54 /* PhotosViewController.swift in Sources */,

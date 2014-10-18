@@ -7,54 +7,35 @@
 //
 
 import UIKit
-import CoreData // 11
-import CoreImage // 11
-import OpenGLES // 11
-import Social //
+import CoreData
+import CoreImage
+import OpenGLES
+import Social
 
-// 4 ImagePickerControllerDelegate, NavigationControllerDelegate | 8.5 GalleryDelegate | 10.1 CollectionViewDataSource, CollectionViewDelegate
 class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, GalleryDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
 
     var galleryVC = GalleryViewController() //? and weak var in GalleryViewController
     
-    var context : CIContext? // 11.1a Core Image Context
-    var originalThumbnail : UIImage? // 11.2a
-    //var filterNames = [String]() // DELETE 11.4
-    var filters = [Filter]() // 12.1 Core Data array
-    var filterThumbnails = [FilterThumbnail]() // 11.4 Array of wrappers
+    var context : CIContext?
+    var originalThumbnail : UIImage?
+    var filters = [Filter]()
+    var filterThumbnails = [FilterThumbnail]()
     let imageQueue = NSOperationQueue()
     var currentImage : UIImage?
 
-    @IBOutlet weak var imageView: UIImageView! // 1 UIImageView and Outlet
-    @IBOutlet weak var collectionView: UICollectionView! // 10 UICollectionView and Outlet
-    
-    // 10.4 Create Constraint Outlets for Filter/Animation
+    @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var imageViewWidthConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var collectionViewBottomConstraint: NSLayoutConstraint!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         self.setupVC()
         self.coreImageContext()
-        self.generateThumbnail() // 11.5
+        self.generateThumbnail()
         
-        /*// DELETE 11.4
-        self.filterNames.append("CISepiaTone")
-        self.filterNames.append("CIGaussianBlur")
-        self.filterNames.append("CIPixellate")
-        self.filterNames.append("CIGammaAdjust")
-        self.filterNames.append("CIExposureAdjust")
-        self.filterNames.append("CIPhotoEffectChrome")
-        self.filterNames.append("CIPhotoEffectInstant")
-        self.filterNames.append("CIPhotoEffectMono")
-        self.filterNames.append("CIPhotoEffectNoir")
-        self.filterNames.append("CIPhotoEffectTonal")
-        self.filterNames.append("CIPhotoEffectTransfer")
-        */
-        
-        // 12.3 Call CoreDataSeeder function (data from appDelegate managedObjectContext)
+        // Call CoreDataSeeder function (data from appDelegate managedObjectContext)
         var launchedOnce = NSUserDefaults.standardUserDefaults().boolForKey("HasLaunchedOnce") // Primitives get copied, not referenced
         if launchedOnce != true {
             println("First time launching, seeding data")
@@ -68,23 +49,17 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
             println("Has launched before, not seeding data")
         }
         
-        // 12.4a Fetch Filters
         self.fetchFilters()
-
-        // 12.6a Reset Filter Thumbnails
         self.resetFilterThumbnails()
         
-        // 10.2
         self.collectionView.dataSource = self
         self.collectionView.delegate = self
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
-    // 10.3
     // MARK: - Collection View Data Source
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -97,12 +72,6 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("FILTER_CELL", forIndexPath: indexPath) as FilterCollectionViewCell
         
         // CVH2
-        /* var filterThumbnail = FilterThumbnail(name: self.filterNames[indexPath.row], thumbnail: self.originalThumbnail!, queue: self.imageQueue, context: self.context!)
-        filterThumbnail.generateThumbnail { (image) -> Void in
-            // Generating filtered thumbnails from FilterThumbnail class, then setting FilteredCollectionViewCell to image result
-            cell.imageView.image = image
-        } */
-        // 12.5
         var filterThumbnail = self.filterThumbnails[indexPath.row]
         // Lazy loading
         if filterThumbnail.filteredThumbnail != nil {
@@ -121,29 +90,9 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         return cell
     }
     
-    // 12.7
     // MARK: - Collection View Delegate
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        /*
-        var filterOperation = NSBlockOperation { () -> Void in
-            var filterThumbnail = self.filterThumbnails[indexPath.row]
-            var filteredImage = UIImage()
-            var image = CIImage(image: self.currentImage)
-            var imageFilter = CIFilter(name: filterThumbnail.filterName)
-            imageFilter.setDefaults()
-            imageFilter.setValue(image, forKey: kCIInputImageKey)
-            NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
-                var result = imageFilter.valueForKey(kCIOutputImageKey) as CIImage
-                var extent = result.extent()
-                var imageRef = self.context?.createCGImage(result, fromRect: extent)
-                filteredImage = UIImage(CGImage: imageRef)
-                self.imageView.image = filteredImage
-            })
-        }
-        
-        self.imageQueue.addOperation(filterOperation)
-        */
         var filterThumbnail = self.filterThumbnails[indexPath.row]
         var filteredImage = UIImage()
         var image = CIImage(image: self.currentImage)
@@ -156,25 +105,141 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         var imageRef = self.context?.createCGImage(result, fromRect: extent)
         filteredImage = UIImage(CGImage: imageRef)
         self.imageView.image = filteredImage
+        
+        let revertButton = UIBarButtonItem(title: "Revert", style: UIBarButtonItemStyle.Bordered, target: self, action: "revertFilter")
+        self.navigationItem.leftBarButtonItem = revertButton
         self.exitFilterMode()
     }
     
+    // MARK: - Gallery Delegate
+    
+    func didTapOnPicture(image : UIImage) {
+        self.currentImage = image
+        self.imageView.image = image
+        self.generateThumbnail()
+        self.resetFilterThumbnails()
+        self.collectionView.reloadData()
+    }
+
+    // MARK: - Core Image Context
+    
+    func coreImageContext() {
+        var options = [kCIContextWorkingColorSpace : NSNull()] //
+        var myEAGLContext = EAGLContext(API: EAGLRenderingAPI.OpenGLES2) // Newer devices can use OpenGLES3
+        self.context = CIContext(EAGLContext: myEAGLContext, options: options)
+    }
+    
+    // MARK: - Photo Filter
+    
+    func generateThumbnail() {
+        let size = CGSize(width: 150, height: 150)
+        
+        UIGraphicsBeginImageContext(size)
+        self.imageView.image?.drawInRect(CGRect(x: 0, y: 0, width: 150, height: 150))
+        self.originalThumbnail = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+    }
+    
+    func fetchFilters() {
+        var appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
+        var context = appDelegate.managedObjectContext
+        
+        var error : NSError?
+        var fetchRequest = NSFetchRequest(entityName: "Filter")
+        let fetchResults = context?.executeFetchRequest(fetchRequest, error: &error)
+        if let filters = fetchResults as? [Filter] {
+            self.filters = filters
+        }
+    }
+    
+    func resetFilterThumbnails() {
+        var newFilters = [FilterThumbnail]()
+        for filterIndex in 0...(self.filters.count-1) { // Alternative: for var filterIndex = 0; filterIndex < self.filters.count; ++filterIndex
+            var filter = self.filters[filterIndex]
+            var filterName = filter.name
+            var thumbnail = FilterThumbnail(name: filterName, thumbnail: self.originalThumbnail!, queue: self.imageQueue, context: self.context!)
+            newFilters.append(thumbnail)
+        }
+        
+        self.filterThumbnails = newFilters
+    }
+    
+    func revertFilter() {
+        self.imageView.image = self.currentImage
+        self.navigationItem.leftBarButtonItem = nil
+    }
+    
+    // MARK: - Image Picker Controller
+    
+    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [NSObject : AnyObject]) {
+        var image = info[UIImagePickerControllerEditedImage] as? UIImage
+        self.currentImage = image
+        self.imageView.image = image
+        self.generateThumbnail()
+        self.resetFilterThumbnails()
+        self.collectionView.reloadData()
+        self.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    // MARK: - Social
+    
+    func postToTwitter(sender: AnyObject) {
+        if SLComposeViewController.isAvailableForServiceType(SLServiceTypeTwitter) {
+            var tweetSheet : SLComposeViewController = SLComposeViewController(forServiceType: SLServiceTypeTwitter)
+            tweetSheet.setInitialText("What's happening?")
+            tweetSheet.addImage(self.imageView.image)
+            
+            self.presentViewController(tweetSheet, animated: true, completion: nil)
+        }
+    }
+    
+    // MARK: - Animation
+    
+    func enterFilterMode() {
+        self.imageViewHeightConstraint.constant = self.imageViewHeightConstraint.constant * 0.9
+        self.imageViewWidthConstraint.constant = self.imageViewWidthConstraint.constant * 0.9
+        self.collectionViewBottomConstraint.constant = 50
+        
+        UIView.animateWithDuration(0.4, animations: { () -> Void in
+            self.view.layoutIfNeeded()
+        })
+        
+        let cancelButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Cancel, target: self, action: "exitFilterMode")
+        self.navigationItem.leftBarButtonItem = cancelButton
+        self.navigationItem.rightBarButtonItem = nil
+    }
+    
+    func exitFilterMode() {
+        self.imageViewHeightConstraint.constant = self.imageViewHeightConstraint.constant / 0.9
+        self.imageViewWidthConstraint.constant = self.imageViewWidthConstraint.constant / 0.9
+        self.collectionViewBottomConstraint.constant = -100
+        
+        UIView.animateWithDuration(0.4, animations: { () -> Void in
+            self.view.layoutIfNeeded()
+        })
+        
+        let composeButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Compose, target: self, action: "postToTwitter:")
+        self.navigationItem.leftBarButtonItem = nil
+        self.navigationItem.rightBarButtonItem = composeButton
+    }
+
+    
     // MARK: - Action Sheet
     
-    // 2 UIButton and Action Sheet
+    // UIButton and Action Sheet
     @IBAction func photoPressed(sender: AnyObject) {
         // Instantiate UIAlertController
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: UIAlertControllerStyle.ActionSheet) // UIAlertControllerStyle is an enum. Once typed, it'll give you options afterwards.
         
         // Create UIAlertActions
         let filterAction = UIAlertAction(title: "Filters", style: UIAlertActionStyle.Default) { (action) -> Void in
-            // 10.6 Filter Action, calling animation function
+            // Filter Action, calling animation function
             self.enterFilterMode()
         }
         let avfAction = UIAlertAction(title: "AVF Camera", style: UIAlertActionStyle.Default) { (action) -> Void in
             self.performSegueWithIdentifier("SHOW_AVF", sender: self)
         }
-        let cameraAction = UIAlertAction(title: "Take Photo", style: UIAlertActionStyle.Default) { (action) -> Void in
+        let cameraAction = UIAlertAction(title: "ImagePicker Camera", style: UIAlertActionStyle.Default) { (action) -> Void in
             let imagePicker = UIImagePickerController()
             imagePicker.delegate = self
             imagePicker.allowsEditing = true
@@ -182,7 +247,7 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
             
             self.presentViewController(imagePicker, animated: true, completion: nil)
         }
-        let imagePickerAction = UIAlertAction(title: "Image Picker", style: UIAlertActionStyle.Default) { (action) -> Void in
+        let imagePickerAction = UIAlertAction(title: "ImagePicker Moments", style: UIAlertActionStyle.Default) { (action) -> Void in
             let imagePicker = UIImagePickerController()
             imagePicker.delegate = self
             imagePicker.allowsEditing = true
@@ -190,9 +255,8 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
             
             self.presentViewController(imagePicker, animated: true, completion: nil)
         }
-        // Choose Existing
-        let galleryAction = UIAlertAction(title: "Gallery", style: UIAlertActionStyle.Default) { (action) -> Void in
-            // 3 Segue from HomeViewController to GalleryViewController
+        let galleryAction = UIAlertAction(title: "HQ Gallery", style: UIAlertActionStyle.Default) { (action) -> Void in
+            // Segue from HomeViewController to GalleryViewController
             self.performSegueWithIdentifier("SHOW_GALLERY", sender: self)
         }
         
@@ -214,114 +278,6 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         self.presentViewController(alertController, animated: true, completion: nil)
     }
     
-    // 5
-    // MARK: - Image Picker Controller
-    
-    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [NSObject : AnyObject]) {
-        var image = info[UIImagePickerControllerEditedImage] as? UIImage
-        self.currentImage = image
-        self.imageView.image = image
-        self.generateThumbnail()
-        self.resetFilterThumbnails()
-        self.collectionView.reloadData()
-        self.dismissViewControllerAnimated(true, completion: nil)
-    }
-    
-    // 8.6
-    // MARK: - Gallery Delegate
-    
-    func didTapOnPicture(image : UIImage) {
-        self.currentImage = image
-        self.imageView.image = image
-        self.generateThumbnail()
-        self.resetFilterThumbnails()
-        self.collectionView.reloadData()
-    }
-    
-    // MARK: - Core Image Context
-    
-    // 11.1b Setting up Core Image Context
-    func coreImageContext() {
-        var options = [kCIContextWorkingColorSpace : NSNull()] //
-        var myEAGLContext = EAGLContext(API: EAGLRenderingAPI.OpenGLES2) // Newer devices can use OpenGLES3
-        self.context = CIContext(EAGLContext: myEAGLContext, options: options)
-    }
-    
-    // MARK: - Photo Filter
-    
-    // 11.2b Generate Thumbnail
-    func generateThumbnail() {
-        let size = CGSize(width: 100, height: 100)
-        
-        UIGraphicsBeginImageContext(size)
-        self.imageView.image?.drawInRect(CGRect(x: 0, y: 0, width: 100, height: 100))
-        self.originalThumbnail = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-    }
-    
-    // 12.4b Fetch filters
-    func fetchFilters() {
-        var appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
-        var context = appDelegate.managedObjectContext
-        
-        var error : NSError?
-        var fetchRequest = NSFetchRequest(entityName: "Filter")
-        let fetchResults = context?.executeFetchRequest(fetchRequest, error: &error)
-        if let filters = fetchResults as? [Filter] {
-            self.filters = filters
-        }
-    }
-
-    // 12.6b
-    func resetFilterThumbnails() {
-        var newFilters = [FilterThumbnail]()
-        for filterIndex in 0...(self.filters.count-1) { // Alternative: for var filterIndex = 0; filterIndex < self.filters.count; ++filterIndex
-            var filter = self.filters[filterIndex]
-            var filterName = filter.name
-            var thumbnail = FilterThumbnail(name: filterName, thumbnail: self.originalThumbnail!, queue: self.imageQueue, context: self.context!)
-            newFilters.append(thumbnail)
-        }
-        
-        self.filterThumbnails = newFilters
-    }
-    
-    // MARK: - Social
-    
-    func postToTwitter(sender: AnyObject) {
-        if SLComposeViewController.isAvailableForServiceType(SLServiceTypeTwitter) {
-            var tweetSheet : SLComposeViewController = SLComposeViewController(forServiceType: SLServiceTypeTwitter)
-            tweetSheet.setInitialText("Post to Twitter")
-            tweetSheet.addImage(self.currentImage)
-            
-            self.presentViewController(tweetSheet, animated: true, completion: nil)
-        }
-    }
-    
-    // MARK: - Animation
-    
-    // 10.5
-    func enterFilterMode() {
-        self.imageViewHeightConstraint.constant = self.imageViewHeightConstraint.constant * 0.9
-        self.imageViewWidthConstraint.constant = self.imageViewWidthConstraint.constant * 0.9
-        self.collectionViewBottomConstraint.constant = 50
-        
-        UIView.animateWithDuration(0.4, animations: { () -> Void in
-            self.view.layoutIfNeeded()
-        })
-    }
-    
-    // 12.8
-    func exitFilterMode() {
-        self.imageViewHeightConstraint.constant = self.imageViewHeightConstraint.constant / 0.9
-        self.imageViewWidthConstraint.constant = self.imageViewWidthConstraint.constant / 0.9
-        self.collectionViewBottomConstraint.constant = -100
-        
-        UIView.animateWithDuration(0.4, animations: { () -> Void in
-            self.view.layoutIfNeeded()
-        })
-    }
-    
-    // 8.2
     // MARK: - Navigation
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -342,10 +298,11 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     func setupVC() {
         var defaultImage = UIImage(named: "default")
         
-        var postButton = UIBarButtonItem(title: "Post", style: UIBarButtonItemStyle.Bordered, target: self, action: "postToTwitter:")
-        self.navigationItem.rightBarButtonItem = postButton
+        let composeButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Compose, target: self, action: "postToTwitter:")
+        // let postButton = UIBarButtonItem(title: nil, style: UIBarButtonItemStyle., target: self, action: "postToTwitter:")
+        self.navigationItem.rightBarButtonItem = composeButton
         
-        self.imageView.layer.cornerRadius = self.imageView.frame.size.width / 6
+        self.imageView.layer.cornerRadius = self.imageView.frame.size.width / 10
         self.imageView.clipsToBounds = true
         self.imageView.layer.borderWidth = 3.0
         self.imageView.layer.borderColor = UIColor.whiteColor().CGColor

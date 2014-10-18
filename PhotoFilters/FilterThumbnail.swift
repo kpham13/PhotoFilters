@@ -8,7 +8,6 @@
 
 import UIKit
 
-// 11.3 Filter Thumbnail custom class
 class FilterThumbnail {
     
     var filterName : String

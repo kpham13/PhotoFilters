@@ -8,8 +8,7 @@
 
 import UIKit
 
-//8 Custom protocol
 protocol GalleryDelegate : class {
     
-    func didTapOnPicture(image : UIImage)
+    func didTapOnPicture(image: UIImage)
 }
