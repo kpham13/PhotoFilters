@@ -115,18 +115,18 @@ class GalleryViewController: UIViewController, UICollectionViewDataSource, UICol
         self.navigationTitle.title = "Gallery"
         
         // Append to images and thumbnails array
-        for imageIndex in 1...17 {
+        for imageIndex in 1...14 {
             let size = CGSize(width: 100, height: 100)
-            var thumbnail = UIImage(named: "unsplash_\(imageIndex).jpg")
             var image = UIImage(named: "unsplash_\(imageIndex).jpg")
             
+            self.images.append(image)
+            
             UIGraphicsBeginImageContext(size)
-            thumbnail.drawInRect(CGRect(x: 0, y: 0, width: 100, height: 100))
-            thumbnail = UIGraphicsGetImageFromCurrentImageContext()
+            image.drawInRect(CGRect(x: 0, y: 0, width: 100, height: 100))
+            image = UIGraphicsGetImageFromCurrentImageContext()
             UIGraphicsEndImageContext()
             
-            self.thumbnails.append(thumbnail)
-            self.images.append(image)
+            self.thumbnails.append(image)
         }
         
     }

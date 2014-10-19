@@ -22,9 +22,11 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     var filterThumbnails = [FilterThumbnail]()
     let imageQueue = NSOperationQueue()
     var currentImage : UIImage?
-
+    var hasChanged : Bool?
+    
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var actionsButton: UIButton!
     @IBOutlet weak var imageViewWidthConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var collectionViewBottomConstraint: NSLayoutConstraint!
@@ -106,8 +108,7 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         filteredImage = UIImage(CGImage: imageRef)
         self.imageView.image = filteredImage
         
-        let revertButton = UIBarButtonItem(title: "Revert", style: UIBarButtonItemStyle.Bordered, target: self, action: "revertFilter")
-        self.navigationItem.leftBarButtonItem = revertButton
+        self.hasChanged = true
         self.exitFilterMode()
     }
     
@@ -167,6 +168,7 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
     func revertFilter() {
         self.imageView.image = self.currentImage
         self.navigationItem.leftBarButtonItem = nil
+        self.hasChanged = false
     }
     
     // MARK: - Image Picker Controller
@@ -207,6 +209,7 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
         let cancelButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Cancel, target: self, action: "exitFilterMode")
         self.navigationItem.leftBarButtonItem = cancelButton
         self.navigationItem.rightBarButtonItem = nil
+        self.actionsButton.hidden = true
     }
     
     func exitFilterMode() {
@@ -218,15 +221,21 @@ class HomeViewController: UIViewController, UIImagePickerControllerDelegate, UIN
             self.view.layoutIfNeeded()
         })
         
+        if self.hasChanged == true {
+            let revertButton = UIBarButtonItem(title: "Revert", style: UIBarButtonItemStyle.Bordered, target: self, action: "revertFilter")
+            self.navigationItem.leftBarButtonItem = revertButton
+        } else {
+            self.navigationItem.leftBarButtonItem = nil
+        }
+        
         let composeButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Compose, target: self, action: "postToTwitter:")
-        self.navigationItem.leftBarButtonItem = nil
         self.navigationItem.rightBarButtonItem = composeButton
+        self.actionsButton.hidden = false
     }
 
     
     // MARK: - Action Sheet
     
-    // UIButton and Action Sheet
     @IBAction func photoPressed(sender: AnyObject) {
         // Instantiate UIAlertController
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: UIAlertControllerStyle.ActionSheet) // UIAlertControllerStyle is an enum. Once typed, it'll give you options afterwards.

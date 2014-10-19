@@ -7,6 +7,7 @@
     <customFonts key="customFonts">
         <mutableArray key="Gotham-Black.ttf">
             <string>Gotham-Black</string>
+            <string>Gotham-Black</string>
         </mutableArray>
     </customFonts>
     <scenes>
@@ -61,8 +62,9 @@
                                 </cells>
                             </collectionView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bKa-ZG-K5y">
-                                <rect key="frame" x="276" y="558" width="49" height="30"/>
-                                <state key="normal" title="Photos">
+                                <rect key="frame" x="261" y="556" width="78" height="32"/>
+                                <fontDescription key="fontDescription" name="Gotham-Black" family="Gotham" pointSize="20"/>
+                                <state key="normal" title="Actions">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
@@ -83,6 +85,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="3Fi-c8-3h5"/>
                     <connections>
+                        <outlet property="actionsButton" destination="bKa-ZG-K5y" id="rjm-CD-O5Y"/>
                         <outlet property="collectionView" destination="Oy6-HI-6sB" id="zy9-ip-7Ko"/>
                         <outlet property="collectionViewBottomConstraint" destination="bTq-1W-YF5" id="lRq-3f-iLo"/>
                         <outlet property="imageView" destination="Xhh-66-EIE" id="772-xQ-Bgp"/>
@@ -333,42 +336,41 @@
                                 </items>
                             </navigationBar>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UNp-CC-DAY">
-                                <rect key="frame" x="0.0" y="64" width="600" height="344"/>
+                                <rect key="frame" x="0.0" y="64" width="600" height="376"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
+                            <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="FeH-as-9kU">
+                                <rect key="frame" x="255" y="490" width="90" height="90"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="90" id="hO5-S3-sW7"/>
+                                    <constraint firstAttribute="width" constant="90" id="lcC-M6-XyW"/>
+                                </constraints>
+                            </imageView>
                             <imageView clipsSubviews="YES" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="J2M-Xy-oNr">
-                                <rect key="frame" x="255" y="448" width="90" height="90"/>
+                                <rect key="frame" x="145" y="490" width="90" height="90"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="90" id="SrW-cq-n9b"/>
                                     <constraint firstAttribute="height" constant="90" id="g7t-4g-icJ"/>
                                 </constraints>
                             </imageView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MYx-eM-KMJ">
-                                <rect key="frame" x="273" y="558" width="55" height="30"/>
-                                <state key="normal" title="Capture">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="capturePressed:" destination="jMj-1u-F1e" eventType="touchUpInside" id="oX9-NC-LZ2"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstAttribute="centerX" secondItem="FeH-as-9kU" secondAttribute="centerX" id="1tg-Oh-KlA"/>
                             <constraint firstItem="UNp-CC-DAY" firstAttribute="leading" secondItem="5Jn-7I-lge" secondAttribute="leadingMargin" constant="-16" id="D86-T1-ctB"/>
-                            <constraint firstAttribute="centerX" secondItem="J2M-Xy-oNr" secondAttribute="centerX" id="Ell-94-3XC"/>
-                            <constraint firstItem="NeZ-6Z-Lyt" firstAttribute="top" secondItem="MYx-eM-KMJ" secondAttribute="bottom" constant="12" id="GxF-pE-j5t"/>
                             <constraint firstAttribute="trailingMargin" secondItem="bjR-fE-XbZ" secondAttribute="trailing" constant="-16" id="LXW-R9-9tJ"/>
                             <constraint firstAttribute="trailingMargin" secondItem="UNp-CC-DAY" secondAttribute="trailing" constant="-16" id="RF3-bn-PU4"/>
                             <constraint firstItem="UNp-CC-DAY" firstAttribute="top" secondItem="bjR-fE-XbZ" secondAttribute="bottom" id="S6c-SF-ujL"/>
                             <constraint firstItem="bjR-fE-XbZ" firstAttribute="leading" secondItem="5Jn-7I-lge" secondAttribute="leadingMargin" constant="-16" id="SFM-PE-Zsg"/>
-                            <constraint firstAttribute="centerX" secondItem="MYx-eM-KMJ" secondAttribute="centerX" id="WlX-KZ-b0m"/>
-                            <constraint firstItem="J2M-Xy-oNr" firstAttribute="top" secondItem="UNp-CC-DAY" secondAttribute="bottom" constant="40" id="bns-ew-68a"/>
+                            <constraint firstItem="NeZ-6Z-Lyt" firstAttribute="top" secondItem="J2M-Xy-oNr" secondAttribute="bottom" constant="20" id="Say-91-Bgb"/>
+                            <constraint firstItem="FeH-as-9kU" firstAttribute="top" secondItem="UNp-CC-DAY" secondAttribute="bottom" constant="50" id="aPC-li-RHL"/>
                             <constraint firstItem="bjR-fE-XbZ" firstAttribute="top" secondItem="Q3w-R6-8hJ" secondAttribute="bottom" id="cia-Ex-UyQ"/>
-                            <constraint firstItem="MYx-eM-KMJ" firstAttribute="top" secondItem="J2M-Xy-oNr" secondAttribute="bottom" constant="20" id="hgD-oz-BHt"/>
+                            <constraint firstItem="NeZ-6Z-Lyt" firstAttribute="top" secondItem="FeH-as-9kU" secondAttribute="bottom" constant="20" id="oOQ-vd-bHj"/>
+                            <constraint firstItem="FeH-as-9kU" firstAttribute="leading" secondItem="J2M-Xy-oNr" secondAttribute="trailing" constant="20" id="yE4-8n-mfE"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="captureButtonImageView" destination="FeH-as-9kU" id="g7Q-AB-0Lb"/>
                         <outlet property="capturePreviewImageView" destination="J2M-Xy-oNr" id="wkr-d8-Vdc"/>
                         <outlet property="navigationTitle" destination="qnb-vA-4H8" id="2Wx-7B-bPi"/>
                         <outlet property="previewView" destination="UNp-CC-DAY" id="B9i-L3-7fy"/>

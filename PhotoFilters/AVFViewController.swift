@@ -22,6 +22,7 @@ class AVFViewController: UIViewController {
     
     @IBOutlet weak var previewView: UIView!
     @IBOutlet weak var capturePreviewImageView: UIImageView!
+    @IBOutlet weak var captureButtonImageView: UIImageView!
     @IBOutlet weak var navigationTitle: UINavigationItem!
     @IBOutlet weak var saveButton: UIBarButtonItem!
     
@@ -66,8 +67,8 @@ class AVFViewController: UIViewController {
         captureSession.addOutput(self.stillImageOutput)
         captureSession.startRunning()
     }
-
-    @IBAction func capturePressed(sender: AnyObject) {
+    
+    func captureButtonPressed() {
         var videoConnection : AVCaptureConnection?
         
         for connection in self.stillImageOutput.connections {
@@ -117,6 +118,9 @@ class AVFViewController: UIViewController {
     // MARK: - Gesture Recognizer
     
     func setupTapGesture() {
+        var tapCaptureButton = UITapGestureRecognizer(target: self, action: "captureButtonPressed")
+        self.captureButtonImageView.addGestureRecognizer(tapCaptureButton)
+        
         var tapImage = UITapGestureRecognizer(target: self, action: "saveAssetToPhotos")
         self.capturePreviewImageView.addGestureRecognizer(tapImage)
     }
@@ -132,6 +136,9 @@ class AVFViewController: UIViewController {
     func setupVC() {
         // let cancelButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Cancel, target: self, action: "dismissVC")
         // let saveButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Save, target: self, action: "saveAssetToPhotos:")
+        let captureButtonImage = UIImage(named: "capture_button")
+        
+        self.captureButtonImageView.image = captureButtonImage
         self.navigationTitle.title = "AVFoundation Camera"
         self.saveButton.enabled = false
         //self.navigationBar.backItem?.leftBarButtonItem = cancelButton
